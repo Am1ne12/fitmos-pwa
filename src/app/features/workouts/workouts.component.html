@@ -1,0 +1,168 @@
+<app-navbar></app-navbar>
+<div class="workouts-container">
+  <div class="workouts-header">
+    <h1>💪 Entraînement</h1>
+    <p>Enregistrez vos exercices pour suivre votre progressive overload</p>
+  </div>
+
+  @if (!isWorkoutActive()) {
+    <!-- État initial : pas d'entraînement en cours -->
+    <div class="empty-state">
+      <div class="empty-icon">🏋️</div>
+      <h2>Commencez votre entraînement</h2>
+      <p>Enregistrez vos exercices, séries, répétitions et poids pour suivre votre progression</p>
+      <button class="btn btn-primary" (click)="startNewWorkout()">
+        Commencer un entraînement
+      </button>
+    </div>
+  } @else {
+    <!-- Entraînement en cours -->
+    <div class="current-workout">
+      <div class="workout-header-bar">
+        <div>
+          <input
+            type="text"
+            [(ngModel)]="currentWorkout().name"
+            class="workout-name-input"
+            placeholder="Nom de l'entraînement"
+          />
+          <p class="workout-date">{{ currentWorkout().date | date:'EEEE d MMMM y' }}</p>
+        </div>
+        <button class="btn btn-success" (click)="saveWorkout()">
+          ✅ Terminer l'entraînement
+        </button>
+      </div>
+
+      <!-- Liste des exercices -->
+      <div class="exercises-list">
+        @for (exercise of currentWorkout().exercises; track $index) {
+          <div class="exercise-card">
+            <div class="exercise-header">
+              <h3>{{ exercise.name }}</h3>
+              <button class="btn-icon btn-danger" (click)="removeExercise($index)">
+                🗑️
+              </button>
+            </div>
+            
+            <div class="sets-table">
+              <div class="sets-header">
+                <span>Série</span>
+                <span>Poids (kg)</span>
+                <span>Reps</span>
+              </div>
+              
+              @for (set of exercise.sets; track $index) {
+                <div class="set-row">
+                  <span class="set-number">{{ $index + 1 }}</span>
+                  <span class="set-weight">{{ set.weight }} kg</span>
+                  <span class="set-reps">{{ set.reps }} reps</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <button class="btn btn-secondary add-exercise-btn" (click)="showAddExerciseModal.set(true)">
+        ➕ Ajouter un exercice
+      </button>
+
+      <!-- Notes -->
+      <div class="workout-notes">
+        <label>Notes sur l'entraînement</label>
+        <textarea
+          [(ngModel)]="currentWorkout().notes"
+          placeholder="Comment vous sentez-vous ? Des observations ?"
+          rows="3"
+        ></textarea>
+      </div>
+    </div>
+  }
+
+  <!-- Historique des entraînements -->
+  @if (workouts().length > 0) {
+    <div class="workouts-history">
+      <h2>📅 Historique</h2>
+      <div class="history-grid">
+        @for (workout of workouts(); track workout.id) {
+          <div class="history-card">
+            <div class="history-header">
+              <h3>{{ workout.name }}</h3>
+              <span class="history-date">{{ workout.date | date:'d MMM' }}</span>
+            </div>
+            <p class="history-exercises">{{ workout.exercises.length }} exercices</p>
+            @if (workout.notes) {
+              <p class="history-notes">{{ workout.notes }}</p>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Modal : Ajouter un exercice -->
+@if (showAddExerciseModal()) {
+  <div class="modal-overlay" (click)="showAddExerciseModal.set(false)">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>➕ Ajouter un exercice</h2>
+        <button class="btn-close" (click)="showAddExerciseModal.set(false)">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nom de l'exercice</label>
+          <input
+            type="text"
+            [(ngModel)]="newExercise.name"
+            placeholder="Ex: Développé couché"
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Séries</label>
+          @for (set of newExercise.sets; track $index) {
+            <div class="set-input-row">
+              <span class="set-label">Série {{ $index + 1 }}</span>
+              <input
+                type="number"
+                [(ngModel)]="set.weight"
+                placeholder="Poids (kg)"
+                min="0"
+                step="0.5"
+                class="form-input-small"
+              />
+              <input
+                type="number"
+                [(ngModel)]="set.reps"
+                placeholder="Reps"
+                min="1"
+                class="form-input-small"
+              />
+              @if (newExercise.sets.length > 1) {
+                <button class="btn-icon btn-danger" (click)="removeSetFromNewExercise($index)">
+                  ✕
+                </button>
+              }
+            </div>
+          }
+          
+          <button class="btn btn-secondary btn-sm" (click)="addSetToNewExercise()">
+            ➕ Ajouter une série
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="showAddExerciseModal.set(false)">
+          Annuler
+        </button>
+        <button class="btn btn-primary" (click)="addExerciseToWorkout()">
+          Ajouter l'exercice
+        </button>
+      </div>
+    </div>
+  </div>
+}

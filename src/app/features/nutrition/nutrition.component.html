@@ -1,0 +1,305 @@
+<app-navbar></app-navbar>
+<div class="nutrition-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1>🍎 Nutrition</h1>
+      <p>Suivez votre alimentation quotidienne</p>
+    </div>
+    @if (todayNutritionDay() && !todayNutritionDay()!.is_completed) {
+      <button class="btn btn-success" (click)="completeDay()">
+        ✅ Terminer la journée
+      </button>
+    }
+  </div>
+
+  <!-- Daily Goals Progress -->
+  <div class="goals-card">
+    <h2>📊 Progression du jour</h2>
+    <div class="goals-grid">
+      <div class="goal-item">
+        <div class="goal-label">Calories</div>
+        <div class="goal-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="Math.min((dailyTotals().calories / dailyGoals().calories) * 100, 100)"></div>
+          </div>
+          <span>{{ dailyTotals().calories }} / {{ dailyGoals().calories }}</span>
+        </div>
+      </div>
+      
+      <div class="goal-item">
+        <div class="goal-label">Protéines</div>
+        <div class="goal-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="Math.min((dailyTotals().protein / dailyGoals().protein) * 100, 100)"></div>
+          </div>
+          <span>{{ dailyTotals().protein }}g / {{ dailyGoals().protein }}g</span>
+        </div>
+      </div>
+
+      <div class="goal-item">
+        <div class="goal-label">Glucides</div>
+        <div class="goal-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="Math.min((dailyTotals().carbs / dailyGoals().carbs) * 100, 100)"></div>
+          </div>
+          <span>{{ dailyTotals().carbs }}g / {{ dailyGoals().carbs }}g</span>
+        </div>
+      </div>
+
+      <div class="goal-item">
+        <div class="goal-label">Lipides</div>
+        <div class="goal-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="Math.min((dailyTotals().fat / dailyGoals().fat) * 100, 100)"></div>
+          </div>
+          <span>{{ dailyTotals().fat }}g / {{ dailyGoals().fat }}g</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Chargement...</p>
+    </div>
+  } @else {
+    <!-- Today's Meals -->
+    <div class="meals-section">
+      <div class="section-header">
+        <h3>🍽️ Mes repas</h3>
+        <button class="btn btn-primary" (click)="openAddMealModal()">
+          ➕ Ajouter un repas
+        </button>
+      </div>
+
+      @if (todayNutritionDay()?.meals && todayNutritionDay()!.meals!.length > 0) {
+        <div class="meals-list">
+          @for (meal of todayNutritionDay()!.meals; track meal.id) {
+            <div class="meal-card-large">
+              <!-- Meal Header -->
+              <div class="meal-header">
+                <div class="meal-title-section">
+                  <h4>{{ meal.name }}</h4>
+                  @if (meal.food_items && meal.food_items.length > 0) {
+                    <div class="meal-summary">
+                      {{ getMealTotals(meal).calories }} cal •
+                      {{ getMealTotals(meal).protein }}g protéines •
+                      {{ getMealTotals(meal).carbs }}g glucides •
+                      {{ getMealTotals(meal).fat }}g lipides
+                    </div>
+                  }
+                </div>
+                <button class="btn-icon btn-danger" (click)="deleteMeal(meal.id)" title="Supprimer le repas">
+                  🗑️
+                </button>
+              </div>
+
+              <!-- Food Items -->
+              @if (meal.food_items && meal.food_items.length > 0) {
+                <div class="food-items-list">
+                  @for (food of meal.food_items; track food.id) {
+                    <div class="food-item-row">
+                      <div class="food-info">
+                        <div class="food-name-qty">
+                          <span class="food-name">{{ food.food_name }}</span>
+                          <span class="food-quantity">{{ food.quantity }} {{ food.unit }}</span>
+                        </div>
+                        <div class="food-nutrients">
+                          {{ getFoodTotals(food).calories }} cal •
+                          P: {{ getFoodTotals(food).protein }}g •
+                          G: {{ getFoodTotals(food).carbs }}g •
+                          L: {{ getFoodTotals(food).fat }}g
+                        </div>
+                      </div>
+                      <button class="btn-icon btn-danger" (click)="deleteFoodItem(meal.id, food.id!)" title="Supprimer">
+                        ✕
+                      </button>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="empty-meal">
+                  <p>Aucun aliment ajouté</p>
+                </div>
+              }
+
+              <!-- Add Food to Meal Button -->
+              <button class="btn btn-ghost add-food-btn" (click)="selectedMeal.set(meal); searchQuery.set(''); searchResults.set([])">
+                ➕ Ajouter un aliment
+              </button>
+
+              <!-- Search for this meal -->
+              @if (selectedMeal() && selectedMeal()!.id === meal.id && !showAddFoodModal()) {
+                <div class="inline-search">
+                  <div class="search-box">
+                    <input 
+                      type="text" 
+                      [(ngModel)]="searchQuery" 
+                      (input)="searchFood()"
+                      class="form-input" 
+                      placeholder="Rechercher un aliment..."
+                    />
+                    @if (isSearching()) {
+                      <div class="search-loading">🔄 Recherche...</div>
+                    }
+                    
+                    @if (!searchQuery() && !isSearching()) {
+                      <div class="search-suggestions">
+                        <p class="suggestions-label">💡 Suggestions :</p>
+                        <div class="suggestion-chips">
+                          <button class="suggestion-chip" (click)="searchSuggestion('chicken breast')">🍗 Poulet</button>
+                          <button class="suggestion-chip" (click)="searchSuggestion('white rice')">🍚 Riz</button>
+                          <button class="suggestion-chip" (click)="searchSuggestion('egg')">🥚 Œuf</button>
+                          <button class="suggestion-chip" (click)="searchSuggestion('banana')">🍌 Banane</button>
+                          <button class="suggestion-chip" (click)="searchSuggestion('salmon')">🐟 Saumon</button>
+                          <button class="suggestion-chip" (click)="searchSuggestion('broccoli')">🥦 Brocoli</button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                  
+                  @if (searchResults().length > 0) {
+                    <div class="search-results">
+                      @for (food of searchResults(); track food.foodId) {
+                        <div class="food-result" (click)="openAddFoodModal(meal, food)">
+                          <div>
+                            <div class="food-result-name">{{ food.label }}</div>
+                            <div class="food-result-meta">{{ food.nutrients.calories || 0 }} cal • {{ food.nutrients.protein || 0 }}g protéines (pour 100g)</div>
+                          </div>
+                          <button class="btn btn-ghost btn-sm">Sélectionner →</button>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <div class="empty-icon">🍽️</div>
+          <p>Aucun repas aujourd'hui</p>
+          <p class="empty-hint">Commencez par ajouter un repas (Petit-déjeuner, Déjeuner, Dîner...)</p>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Modal: Add Meal -->
+@if (showAddMealModal()) {
+  <div class="modal-overlay" (click)="showAddMealModal.set(false)">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Ajouter un repas</h2>
+        <button class="btn-close" (click)="showAddMealModal.set(false)">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nom du repas</label>
+          <input 
+            type="text" 
+            [(ngModel)]="newMealName" 
+            class="form-input" 
+            placeholder="Ex: Petit-déjeuner, Déjeuner, Collation..."
+          />
+        </div>
+        <div class="quick-meal-options">
+          <button class="quick-meal-btn" (click)="newMealName.set('Petit-déjeuner')">🌅 Petit-déjeuner</button>
+          <button class="quick-meal-btn" (click)="newMealName.set('Déjeuner')">☀️ Déjeuner</button>
+          <button class="quick-meal-btn" (click)="newMealName.set('Dîner')">🌙 Dîner</button>
+          <button class="quick-meal-btn" (click)="newMealName.set('Collation')">🍎 Collation</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="showAddMealModal.set(false)">Annuler</button>
+        <button class="btn btn-primary" (click)="addMeal()" [disabled]="!newMealName()">Ajouter</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal: Add Food with Quantity -->
+@if (showAddFoodModal()) {
+  <div class="modal-overlay" (click)="showAddFoodModal.set(false)">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Ajouter {{ selectedFood()?.label }}</h2>
+        <button class="btn-close" (click)="showAddFoodModal.set(false)">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="food-preview">
+          <div class="food-preview-info">
+            <div class="food-preview-name">{{ selectedFood()?.label }}</div>
+            <div class="food-preview-base">Pour 100g :</div>
+            <div class="food-preview-nutrients">
+              🔥 {{ selectedFood()?.nutrients.calories || 0 }} cal •
+              💪 {{ selectedFood()?.nutrients.protein || 0 }}g protéines •
+              🍞 {{ selectedFood()?.nutrients.carbs || 0 }}g glucides •
+              🧈 {{ selectedFood()?.nutrients.fat || 0 }}g lipides
+            </div>
+          </div>
+        </div>
+
+        <!-- Unit Selection -->
+        @if (availableUnits().length > 1) {
+          <div class="form-group">
+            <label>Unité</label>
+            <select 
+              [(ngModel)]="selectedUnit" 
+              (change)="onUnitChange()"
+              class="form-input">
+              @for (unit of availableUnits(); track unit.value) {
+                <option [value]="unit.value">{{ unit.label }}</option>
+              }
+            </select>
+          </div>
+        }
+
+        <div class="form-group">
+          <label>Quantité</label>
+          <input 
+            type="number" 
+            [(ngModel)]="foodQuantity" 
+            class="form-input" 
+            [placeholder]="selectedUnit() === 'g' ? '100' : '1'"
+            min="0.1"
+            step="0.1"
+          />
+        </div>
+
+        <div class="quick-quantity-buttons">
+          @for (qty of getQuickQuantities(); track $index) {
+            <button class="quick-qty-btn" (click)="foodQuantity.set(qty)">
+              {{ qty }}{{ selectedUnit() }}
+            </button>
+          }
+        </div>
+
+        @if (selectedFood() && foodQuantity() > 0 && getCalculatedNutrients()) {
+          <div class="calculated-totals">
+            <div class="totals-label">
+              Pour {{ foodQuantity() }} {{ selectedUnit() }} 
+              (≈ {{ getCalculatedNutrients()!.gramsEquivalent }}g) :
+            </div>
+            <div class="totals-values">
+              🔥 {{ getCalculatedNutrients()!.calories }} cal •
+              💪 {{ getCalculatedNutrients()!.protein }}g protéines •
+              🍞 {{ getCalculatedNutrients()!.carbs }}g glucides •
+              🧈 {{ getCalculatedNutrients()!.fat }}g lipides
+            </div>
+          </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" (click)="showAddFoodModal.set(false)">Annuler</button>
+        <button class="btn btn-primary" (click)="addFoodToMeal()" [disabled]="foodQuantity() <= 0">
+          ➕ Ajouter à {{ selectedMeal()?.name }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,201 @@
+<app-navbar></app-navbar>
+
+<div class="dashboard">
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Chargement...</p>
+    </div>
+  } @else {
+    <!-- Header Section -->
+    <div class="dashboard-header">
+      <div class="welcome-section">
+        <h1>Tableau de Bord</h1>
+        <p class="greeting">Bienvenue, {{ getUserName() }}! 👋</p>
+      </div>
+      @if (userProfile()) {
+        <div class="daily-goal-card">
+          <div class="goal-icon">🎯</div>
+          <div class="goal-content">
+            <div class="goal-label">Objectif Quotidien</div>
+            <div class="goal-value">{{ userProfile().daily_calories || 0 }} <span>cal</span></div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Main Stats Grid - 2 columns -->
+    <div class="main-stats">
+      <!-- Calories Progress Circle -->
+      <div class="stat-card-large">
+        <h3 class="card-title">📊 Calories Aujourd'hui</h3>
+        <div class="progress-circle-wrapper">
+          <svg class="progress-circle" viewBox="0 0 200 200">
+            <defs>
+              <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <circle cx="100" cy="100" r="85" class="progress-circle-bg"></circle>
+            <circle cx="100" cy="100" r="85" class="progress-circle-fill"
+                    [attr.stroke-dashoffset]="getCaloriesDashOffset()"></circle>
+          </svg>
+          <div class="progress-value">
+            <div class="progress-number">{{ todayCalories() }}</div>
+            <div class="progress-label">cal</div>
+          </div>
+        </div>
+        <div class="progress-info">
+          <div class="info-item">
+            <span class="info-label">Objectif</span>
+            <span class="info-value">{{ userProfile()?.daily_calories || 0 }} cal</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Restant</span>
+            <span class="info-value">{{ getCaloriesRemaining() }} cal</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weight Tracking -->
+      <div class="stat-card-large">
+        <h3 class="card-title">⚖️ Suivi du Poids</h3>
+        <div class="weight-display">
+          <div class="current-weight">
+            <div class="weight-value">{{ userProfile()?.weight || 0 }}</div>
+            <div class="weight-unit">kg</div>
+          </div>
+          <div class="weight-goal">
+            <div class="goal-label">Objectif: {{ getWeightGoal() }}</div>
+          </div>
+        </div>
+        <div class="weight-chart">
+          <!-- Mini chart placeholder -->
+          <div class="chart-placeholder">
+            <div class="chart-line"></div>
+            <div class="chart-dots">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot active"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Stats - 3 columns -->
+    <div class="weekly-stats">
+      <div class="stat-card-small">
+        <div class="stat-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 4C16 4 7 15 7 21C7 26.5228 11.4772 31 17 31C22.5228 31 27 26.5228 27 21C27 15 16 4 16 4Z" fill="#ff7b00" stroke="#ff9f40" stroke-width="2"/>
+            <ellipse cx="16" cy="23" rx="5" ry="3" fill="#fff" fill-opacity="0.7"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ weeklyWaterDays() }}/7</div>
+          <div class="stat-label">Objectif Eau Atteint</div>
+          <div class="stat-sublabel">Cette semaine</div>
+        </div>
+      </div>
+
+      <div class="stat-card-small">
+        <div class="stat-icon">🍽️</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ weeklyCaloriesAvg() }}</div>
+          <div class="stat-label">Calories Moy./Jour</div>
+          <div class="stat-sublabel">Cette semaine</div>
+        </div>
+      </div>
+
+      <div class="stat-card-small">
+        <div class="stat-icon">📈</div>
+        <div class="stat-content">
+          <div class="stat-value" [class.positive]="progressiveOverload() > 0" [class.negative]="progressiveOverload() < 0">
+            {{ progressiveOverload() > 0 ? '+' : '' }}{{ progressiveOverload() }}%
+          </div>
+          <div class="stat-label">Progressive Overload</div>
+          <div class="stat-sublabel">vs semaine dernière</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Water Intake Widget -->
+    <div class="water-widget">
+      <div class="water-header">
+        <h3 class="water-title">💧 Hydratation Journalière</h3>
+        <div class="water-counter">
+          <span class="current-water">{{ waterGlasses() * 250 }}ml</span>
+          <span class="separator"> / </span>
+          <span class="goal-water">2000ml</span>
+        </div>
+      </div>
+      
+      <div class="water-progress-bar">
+        <div class="water-progress-fill" [style.width.%]="getWaterPercentage()">
+          <div class="water-wave"></div>
+        </div>
+      </div>
+
+      <div class="water-glasses-grid">
+        @for (glass of [1,2,3,4,5,6,7,8]; track glass) {
+          <div class="water-glass" [class.filled]="glass <= waterGlasses()">
+            <svg width="32" height="40" viewBox="0 0 32 40">
+              <path d="M4 8 L6 36 C6 38 8 40 10 40 L22 40 C24 40 26 38 26 36 L28 8 Z" 
+                    [attr.fill]="glass <= waterGlasses() ? 'url(#waterGradient)' : 'rgba(255,255,255,0.1)'"
+                    stroke="rgba(255,255,255,0.3)" 
+                    stroke-width="1"/>
+              <defs>
+                <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#4FC3F7;stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:#0288D1;stop-opacity:1" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        }
+      </div>
+
+      <div class="water-actions">
+        <button 
+          (click)="removeWaterGlass()" 
+          [disabled]="waterGlasses() === 0 || isUpdatingWater()"
+          class="water-btn water-btn-minus">
+          <span>−</span>
+        </button>
+        <button 
+          (click)="addWaterGlass()" 
+          [disabled]="waterGlasses() >= 15 || isUpdatingWater()"
+          class="water-btn water-btn-plus">
+          <span>+</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="recent-activity">
+      <h2 class="section-title">Activité Récente</h2>
+      <div class="activity-list">
+        @if (todayWorkouts() > 0) {
+          <div class="activity-item">
+            <div class="activity-icon success">✓</div>
+            <div class="activity-content">
+              <div class="activity-title">Entraînement complété</div>
+              <div class="activity-time">Aujourd'hui</div>
+            </div>
+          </div>
+        } @else {
+          <div class="activity-item empty">
+            <div class="activity-icon">📝</div>
+            <div class="activity-content">
+              <div class="activity-title">Aucune activité aujourd'hui</div>
+              <div class="activity-time">Commencez votre journée avec un entraînement!</div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

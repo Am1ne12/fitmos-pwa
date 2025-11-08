@@ -1,0 +1,191 @@
+<app-navbar></app-navbar>
+<div class="settings-container">
+  <div class="page-header">
+    <div class="header-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M12 1v6m0 6v6m-6-6h6m6 0h-6"></path>
+        <path d="M4.22 4.22l4.24 4.24m7.08 0l4.24-4.24M4.22 19.78l4.24-4.24m7.08 0l4.24 4.24"></path>
+      </svg>
+    </div>
+    <h1>Settings</h1>
+    <p>Manage your profile and preferences</p>
+  </div>
+
+  @if (successMessage()) {
+    <div class="alert alert-success">{{ successMessage() }}</div>
+  }
+
+  <div class="settings-card">
+    <div class="card-header">
+      <h2>Profile Information</h2>
+      @if (!isEditing()) {
+        <button (click)="enableEdit()" class="btn btn-edit">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          Modifier
+        </button>
+      }
+    </div>
+
+    @if (!isEditing()) {
+      <!-- Mode lecture seule -->
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Nom</span>
+          <span class="info-value">{{ profile().display_name || 'Non défini' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Âge</span>
+          <span class="info-value">{{ profile().age || '-' }} ans</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Poids</span>
+          <span class="info-value">{{ profile().weight || '-' }} kg</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Taille</span>
+          <span class="info-value">{{ profile().height || '-' }} cm</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Sexe</span>
+          <span class="info-value">{{ profile().gender === 'male' ? 'Homme' : 'Femme' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Niveau d'activité</span>
+          <span class="info-value">
+            @if (profile().activity_level === 'sedentary') { Sédentaire }
+            @if (profile().activity_level === 'light') { Léger }
+            @if (profile().activity_level === 'moderate') { Modéré }
+            @if (profile().activity_level === 'active') { Actif }
+            @if (profile().activity_level === 'veryActive') { Très actif }
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Objectif</span>
+          <span class="info-value">
+            @if (profile().goal === 'lose') { Perdre du poids }
+            @if (profile().goal === 'maintain') { Maintenir }
+            @if (profile().goal === 'gain') { Prendre du muscle }
+          </span>
+        </div>
+        <div class="info-item highlight">
+          <span class="info-label">Calories quotidiennes</span>
+          <span class="info-value-large">{{ profile().daily_calories || 0 }} kcal</span>
+        </div>
+      </div>
+    } @else {
+      <!-- Mode édition -->
+      <div class="form-group">
+        <label class="form-label">Nom</label>
+        <input 
+          type="text" 
+          [(ngModel)]="editedProfile().display_name" 
+          class="form-input" 
+          placeholder="Votre nom"
+        />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Âge</label>
+          <input 
+            type="number" 
+            [(ngModel)]="editedProfile().age" 
+            class="form-input" 
+            placeholder="25"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Poids (kg)</label>
+          <input 
+            type="number" 
+            [(ngModel)]="editedProfile().weight" 
+            class="form-input" 
+            placeholder="75"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Taille (cm)</label>
+          <input 
+            type="number" 
+            [(ngModel)]="editedProfile().height" 
+            class="form-input" 
+            placeholder="180"
+          />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Sexe</label>
+          <select [(ngModel)]="editedProfile().gender" class="form-input">
+            <option value="male">Homme</option>
+            <option value="female">Femme</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Niveau d'activité</label>
+          <select [(ngModel)]="editedProfile().activity_level" class="form-input">
+            <option value="sedentary">Sédentaire</option>
+            <option value="light">Léger (1-3j/sem)</option>
+            <option value="moderate">Modéré (3-5j/sem)</option>
+            <option value="active">Actif (6-7j/sem)</option>
+            <option value="veryActive">Très actif (2x/jour)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Objectif</label>
+        <select [(ngModel)]="editedProfile().goal" class="form-input">
+          <option value="lose">Perdre du poids</option>
+          <option value="maintain">Maintenir mon poids</option>
+          <option value="gain">Prendre du muscle</option>
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <button 
+          (click)="cancelEdit()" 
+          class="btn btn-cancel"
+        >
+          Annuler
+        </button>
+        <button 
+          (click)="saveProfile()" 
+          class="btn btn-primary"
+          [disabled]="isSaving()"
+        >
+          @if (isSaving()) {
+            <span class="spinner"></span>
+            Enregistrement...
+          } @else {
+            Enregistrer
+          }
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="settings-card account-section">
+    <h2>Account</h2>
+    <div class="account-info">
+      <span class="account-label">Signed in as:</span>
+      <span class="account-email">{{ user()?.email }}</span>
+    </div>
+    <button (click)="logout()" class="btn btn-logout">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line>
+      </svg>
+      Sign Out
+    </button>
+  </div>
+</div>
