@@ -484,20 +484,67 @@ p {
 }
 
 /* ========================================
-   RESPONSIVE
+   RESPONSIVE MOBILE
    ======================================== */
 
 @media (max-width: 768px) {
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.75rem; }
-  h3 { font-size: 1.5rem; }
+  /* Typography */
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  h4 { font-size: 1.125rem; }
   
+  /* Cards */
   .card {
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+  }
+  
+  /* Buttons */
+  .btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9375rem;
+    width: 100%;
+  }
+  
+  .btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Spacing */
+  .container {
     padding: 1rem;
   }
   
-  .btn {
-    padding: 0.625rem 1.25rem;
-    font-size: 0.9375rem;
+  /* Safe area for iPhone */
+  body {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+}
+
+/* iPhone notch and safe areas */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+}
+
+/* Touch improvements for mobile */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets */
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Disable hover effects on touch devices */
+  .card:hover {
+    transform: none;
   }
 }

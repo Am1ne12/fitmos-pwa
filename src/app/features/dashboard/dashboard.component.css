@@ -3,7 +3,7 @@
   margin: 0 auto;
   padding: 2rem;
   padding-bottom: 6rem;
-  min-height: calc(100vh - 70px);
+  min-height: 100vh;
 }
 
 /* Header */
@@ -492,16 +492,35 @@
 @media (max-width: 768px) {
   .dashboard {
     padding: 1rem;
-    padding-bottom: 5rem;
+    padding-bottom: 90px;
   }
 
   .dashboard-header {
     flex-direction: column;
     gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .welcome-section h1 {
+    font-size: 1.5rem;
+  }
+
+  .greeting {
+    font-size: 0.9rem;
   }
 
   .daily-goal-card {
     width: 100%;
+    padding: 1rem;
+    min-width: auto;
+  }
+
+  .goal-value {
+    font-size: 1.5rem;
+  }
+
+  .main-stats {
+    gap: 1rem;
   }
 
   .weekly-stats {
@@ -509,29 +528,75 @@
     gap: 1rem;
   }
 
-  .stat-card-large {
-    min-height: auto;
+  .stat-card-small {
+    padding: 1.25rem;
   }
 
-  .progress-circle-wrapper {
-    width: 160px;
-    height: 160px;
-  }
-
-  .progress-number {
+  .stat-icon {
     font-size: 2rem;
   }
 
+  .stat-value {
+    font-size: 1.75rem;
+  }
+
+  .stat-card-large {
+    min-height: auto;
+    padding: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .progress-circle-wrapper {
+    width: 180px;
+    height: 180px;
+  }
+
+  .progress-number {
+    font-size: 2.5rem;
+  }
+
+  .progress-label {
+    font-size: 0.875rem;
+  }
+
+  .progress-info {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .weight-display {
+    padding: 1.5rem 0;
+  }
+
   .weight-value {
-    font-size: 3rem;
+    font-size: 3.5rem;
   }
 
   .water-widget {
-    padding: 1.5rem;
+    padding: 1.25rem;
+  }
+
+  .water-title {
+    font-size: 1.125rem;
+  }
+
+  .water-counter {
+    font-size: 1rem;
   }
 
   .water-glasses-grid {
     grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+
+  .water-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
   }
 }
 

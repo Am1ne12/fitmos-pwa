@@ -3,7 +3,7 @@
   margin: 0 auto;
   padding: 2rem;
   padding-bottom: 6rem;
-  min-height: calc(100vh - 70px);
+  min-height: 100vh;
 }
 
 .workouts-header {
@@ -484,31 +484,98 @@
 @media (max-width: 768px) {
   .workouts-container {
     padding: 1rem;
-    padding-bottom: 5rem;
+    padding-bottom: 90px;
+  }
+
+  .workouts-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .workouts-header p {
+    font-size: 0.875rem;
+  }
+
+  .current-workout {
+    padding: 1.25rem;
   }
 
   .workout-header-bar {
     flex-direction: column;
+    margin-bottom: 1.5rem;
   }
 
   .workout-name-input {
     max-width: 100%;
+    font-size: 1.25rem;
+  }
+
+  .workout-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .workout-actions button {
+    width: 100%;
+  }
+
+  .empty-state {
+    padding: 3rem 1.5rem;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+  }
+
+  .empty-state h2 {
+    font-size: 1.5rem;
+  }
+
+  .exercise-card {
+    padding: 1.25rem;
+  }
+
+  .exercise-header h3 {
+    font-size: 1rem;
+  }
+
+  .sets-list {
+    gap: 0.75rem;
   }
 
   .history-grid {
     grid-template-columns: 1fr;
   }
 
+  .history-card {
+    padding: 1.25rem;
+  }
+
   .set-input-row {
     flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
   .set-label {
     width: 100%;
     margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+  }
+
+  .set-input {
+    flex: 1;
+    min-width: calc(50% - 0.25rem);
   }
 
   .modal-content {
     max-height: 85vh;
+    padding: 1.5rem;
+  }
+
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .notes-textarea {
+    min-height: 100px;
   }
 }

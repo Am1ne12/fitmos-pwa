@@ -662,7 +662,7 @@ select.form-input {
 @media (max-width: 768px) {
   .nutrition-container {
     padding: 1rem;
-    padding-bottom: 5rem;
+    padding-bottom: 90px;
   }
 
   .page-header {
