@@ -363,6 +363,7 @@ select.form-input option {
 @media (max-width: 768px) {
   .settings-container {
     padding: 1rem;
+    padding-top: 1rem;
     padding-bottom: 90px;
   }
 

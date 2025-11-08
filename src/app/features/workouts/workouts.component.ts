@@ -143,8 +143,22 @@ export class WorkoutsComponent implements OnInit {
   }
 
   removeExercise(index: number) {
-    const workout = this.currentWorkout();
-    workout.exercises.splice(index, 1);
-    this.currentWorkout.set({ ...workout });
+    if (confirm('Supprimer cet exercice ?')) {
+      const workout = this.currentWorkout();
+      workout.exercises.splice(index, 1);
+      this.currentWorkout.set({ ...workout });
+    }
+  }
+
+  cancelWorkout() {
+    if (confirm('Annuler cet entraînement ? Toutes les données seront perdues.')) {
+      this.isWorkoutActive.set(false);
+      this.currentWorkout.set({
+        name: '',
+        date: new Date(),
+        exercises: [],
+        notes: ''
+      });
+    }
   }
 }
