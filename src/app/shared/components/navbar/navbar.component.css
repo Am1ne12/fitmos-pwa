@@ -159,8 +159,9 @@
   }
 
   .navbar-container {
-    height: 70px;
+    height: calc(70px + env(safe-area-inset-bottom));
     padding: 0;
+    padding-bottom: env(safe-area-inset-bottom);
     max-width: 100%;
   }
 

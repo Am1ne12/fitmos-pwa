@@ -661,9 +661,9 @@ select.form-input {
 /* Responsive */
 @media (max-width: 768px) {
   .nutrition-container {
-    padding: 1rem;
-    padding-top: 1rem;
-    padding-bottom: 90px;
+    padding: 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: calc(90px + env(safe-area-inset-bottom));
   }
 
   .page-header {
@@ -760,6 +760,15 @@ select.form-input {
     padding: 0.5rem;
     font-size: 1.25rem;
     flex-shrink: 0;
+  }
+
+  .btn-icon.btn-danger {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-icon.btn-danger svg {
+    color: #EF4444;
   }
 
   .food-item-row {
