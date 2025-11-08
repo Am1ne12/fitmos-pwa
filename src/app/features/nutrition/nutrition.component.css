@@ -6,6 +6,20 @@
   min-height: calc(100vh - 70px);
 }
 
+/* Logo Header */
+.page-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-logo img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
 /* Header */
 .page-header {
   display: flex;
@@ -437,7 +451,8 @@
   width: 100%;
   max-width: 550px;
   max-height: 90vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   animation: modalSlideUp 0.3s ease;
 }
@@ -459,6 +474,7 @@
   align-items: center;
   padding: 1.5rem;
   border-bottom: 1px solid var(--border-light);
+  flex-shrink: 0;
 }
 
 .modal-header h2 {
@@ -487,6 +503,9 @@
 
 .modal-body {
   padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-footer {
@@ -495,6 +514,7 @@
   gap: 1rem;
   padding: 1.5rem;
   border-top: 1px solid var(--border-light);
+  flex-shrink: 0;
 }
 
 /* Quick Meal Options */
@@ -863,12 +883,13 @@ select.form-input {
     max-width: 100%;
     max-height: 85vh;
     border-radius: 1.5rem 1.5rem 0 0;
-    padding: 1.5rem;
-    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
   }
 
   .modal-header {
-    margin-bottom: 1.25rem;
+    padding: 1.25rem;
+    flex-shrink: 0;
   }
 
   .modal-header h2 {
@@ -883,10 +904,17 @@ select.form-input {
   }
 
   .modal-body {
-    max-height: calc(85vh - 180px);
+    padding: 1.25rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
     overflow-y: auto;
+    flex: 1;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 1rem;
+  }
+
+  .modal-footer {
+    padding: 1.25rem;
+    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+    flex-shrink: 0;
   }
 
   .form-group {

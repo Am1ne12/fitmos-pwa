@@ -161,4 +161,36 @@ export class WorkoutsComponent implements OnInit {
       });
     }
   }
+
+  async deleteWorkout(workoutId: string | undefined) {
+    if (!workoutId) return;
+    
+    if (confirm('Supprimer cet entraînement ? Cette action est irréversible.')) {
+      const u = this.user();
+      if (!u) return;
+
+      try {
+        await this.supabaseService.deleteWorkout(workoutId);
+        await this.loadWorkouts();
+        alert('✅ Entraînement supprimé');
+      } catch (error) {
+        console.error('Erreur suppression workout:', error);
+        alert('❌ Erreur lors de la suppression');
+      }
+    }
+  }
+
+  editWorkout(workout: Workout) {
+    if (this.isWorkoutActive()) {
+      if (!confirm('Un entraînement est en cours. Le remplacer par celui-ci ?')) {
+        return;
+      }
+    }
+    
+    this.isWorkoutActive.set(true);
+    this.currentWorkout.set({
+      ...workout,
+      date: new Date(workout.date)
+    });
+  }
 }

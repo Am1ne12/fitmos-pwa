@@ -364,6 +364,23 @@ export class SupabaseService {
   }
 
   /**
+   * Supprimer un workout
+   */
+  async deleteWorkout(workoutId: string): Promise<void> {
+    try {
+      const { error } = await this.supabase
+        .from('workouts')
+        .delete()
+        .eq('id', workoutId);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Erreur suppression workout:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Récupérer les workouts du jour
    */
   async getTodayWorkouts(userId: string): Promise<number> {
@@ -389,15 +406,50 @@ export class SupabaseService {
    */
   async getNutritionForDate(userId: string, date: string): Promise<any> {
     try {
-      const { data, error } = await this.supabase
+      // Récupérer le jour de nutrition avec tous les repas et aliments
+      const { data: nutritionDay, error: dayError } = await this.supabase
         .from('nutrition_days')
-        .select('*')
+        .select(`
+          *,
+          meals (
+            *,
+            food_items (*)
+          )
+        `)
         .eq('user_id', userId)
         .eq('date', date)
         .single();
 
-      if (error && error.code !== 'PGRST116') throw error; // PGRST116 = not found
-      return data;
+      if (dayError && dayError.code !== 'PGRST116') throw dayError;
+      
+      if (!nutritionDay) return null;
+
+      // Calculer les totaux depuis les aliments
+      let totalCalories = 0;
+      let totalProtein = 0;
+      let totalCarbs = 0;
+      let totalFat = 0;
+
+      if (nutritionDay.meals) {
+        for (const meal of nutritionDay.meals) {
+          if (meal.food_items) {
+            for (const food of meal.food_items) {
+              totalCalories += food.calories || 0;
+              totalProtein += food.protein || 0;
+              totalCarbs += food.carbs || 0;
+              totalFat += food.fat || 0;
+            }
+          }
+        }
+      }
+
+      return {
+        ...nutritionDay,
+        total_calories: totalCalories,
+        total_protein: totalProtein,
+        total_carbs: totalCarbs,
+        total_fat: totalFat
+      };
     } catch (error) {
       console.error('Erreur chargement nutrition:', error);
       return null;

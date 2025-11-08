@@ -6,6 +6,20 @@
   min-height: 100vh;
 }
 
+/* Logo Header */
+.page-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-logo img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
 /* Header */
 .dashboard-header {
   display: flex;
