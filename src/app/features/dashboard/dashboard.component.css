@@ -8,7 +8,7 @@
 
 /* Logo Header */
 .page-logo {
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
   margin-bottom: 2rem;
@@ -18,6 +18,12 @@
   width: 120px;
   height: 120px;
   object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .page-logo {
+    display: flex;
+  }
 }
 
 /* Header */
@@ -40,6 +46,41 @@
 .greeting {
   font-size: 1.125rem;
   color: var(--text-secondary);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-refresh {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-refresh:hover {
+  background: var(--bg-secondary);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-refresh svg {
+  transition: transform 0.3s ease;
+}
+
+.btn-refresh:active svg {
+  transform: rotate(180deg);
 }
 
 .daily-goal-card {

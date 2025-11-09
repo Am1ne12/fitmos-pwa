@@ -434,21 +434,29 @@ export class SupabaseService {
         for (const meal of nutritionDay.meals) {
           if (meal.food_items) {
             for (const food of meal.food_items) {
-              totalCalories += food.calories || 0;
-              totalProtein += food.protein || 0;
-              totalCarbs += food.carbs || 0;
-              totalFat += food.fat || 0;
+              // Calculer les valeurs réelles à partir des valeurs pour 100g et du poids en grammes
+              const gramsEquivalent = food.grams_equivalent || 0;
+              const factor = gramsEquivalent / 100;
+              
+              totalCalories += (food.calories_per_100g || 0) * factor;
+              totalProtein += (food.protein_per_100g || 0) * factor;
+              totalCarbs += (food.carbs_per_100g || 0) * factor;
+              totalFat += (food.fat_per_100g || 0) * factor;
+              
+              console.log(`📝 Food: ${food.food_name}, ${gramsEquivalent}g, Calories: ${(food.calories_per_100g || 0) * factor}`);
             }
           }
         }
       }
 
+      console.log(`📊 Total calculated - Calories: ${totalCalories}, Protein: ${totalProtein}g, Carbs: ${totalCarbs}g, Fat: ${totalFat}g`);
+
       return {
         ...nutritionDay,
-        total_calories: totalCalories,
-        total_protein: totalProtein,
-        total_carbs: totalCarbs,
-        total_fat: totalFat
+        total_calories: Math.round(totalCalories),
+        total_protein: Math.round(totalProtein),
+        total_carbs: Math.round(totalCarbs),
+        total_fat: Math.round(totalFat)
       };
     } catch (error) {
       console.error('Erreur chargement nutrition:', error);

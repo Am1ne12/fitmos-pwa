@@ -11,7 +11,7 @@ if ! command -v convert &> /dev/null; then
 fi
 
 cd "$(dirname "$0")"
-SOURCE_IMAGE="src/assets/Fitmos_icon.png"
+SOURCE_IMAGE="src/assets/Fitmos.png"
 OUTPUT_DIR="src/assets/icons"
 
 # Créer le dossier icons s'il n'existe pas

@@ -65,10 +65,14 @@ export class DashboardComponent implements OnInit {
       
       // Charger les calories consommées aujourd'hui
       const nutritionData = await this.supabaseService.getNutritionForDate(u.uid, today);
+      console.log('📊 Nutrition data from Supabase:', nutritionData);
+      
       if (nutritionData) {
         const totalCalories = nutritionData.total_calories || 0;
+        console.log('🔥 Total calories calculated:', totalCalories);
         this.todayCalories.set(totalCalories);
       } else {
+        console.log('⚠️ No nutrition data found for today');
         this.todayCalories.set(0);
       }
 
